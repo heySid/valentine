@@ -1,131 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Will You Be My Valentine? 💖</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<title>Will You Be My Valentine? 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      font-family: "Comic Sans MS", "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
+<style>
+  :root {
+    --pink: #ff4d6d;
+  }
 
-    .card {
-      background: white;
-      padding: 2.5rem;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-      text-align: center;
-      max-width: 90%;
-      width: 400px;
-    }
+  * { box-sizing: border-box; }
 
-    h1 {
-      font-size: 2rem;
-      color: #ff4d6d;
-      margin-bottom: 1rem;
-    }
+  body {
+    margin: 0;
+    height: 100vh;
+    font-family: "Comic Sans MS", "Segoe UI", sans-serif;
+    background: white;
+    background-image:
+      radial-gradient(circle at 15px 15px, rgba(255,77,109,0.15) 10%, transparent 11%),
+      radial-gradient(circle at 55px 55px, rgba(255,77,109,0.15) 10%, transparent 11%);
+    background-size: 80px 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
 
-    p {
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
-    }
+  .card {
+    background: white;
+    width: 92%;
+    max-width: 420px;
+    padding: 2.2rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
 
-    .buttons {
-      position: relative;
-      height: 120px;
-    }
+  h1 { color: var(--pink); }
+  p { min-height: 3em; }
 
-    button {
-      font-size: 1.1rem;
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-      position: absolute;
-    }
+  .actions {
+    margin-top: 2rem;
+    position: relative;
+    height: 140px;
+  }
 
-    #yesBtn {
-      background-color: #ff4d6d;
-      color: white;
-      left: 50%;
-      transform: translateX(-110%);
-    }
+  button {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    transition: all 0.3s ease;
+  }
 
-    #noBtn {
-      background-color: #ccc;
-      color: #333;
-      left: 50%;
-      transform: translateX(10%);
-    }
+  #yesBtn {
+    background: var(--pink);
+    color: white;
+    left: 20%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 
-    #yesBtn:hover {
-      transform: translateX(-110%) scale(1.1);
-    }
+  #noBtn {
+    background: #ddd;
+    left: 60%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 
-    .celebration {
-      display: none;
-    }
+  /* ===== RAGE MODE ANIMATIONS ===== */
+  @keyframes shake {
+    0% { transform: translateY(-50%) translateX(0); }
+    25% { transform: translateY(-50%) translateX(-4px); }
+    50% { transform: translateY(-50%) translateX(4px); }
+    75% { transform: translateY(-50%) translateX(-4px); }
+    100% { transform: translateY(-50%) translateX(0); }
+  }
 
-    .celebration h1 {
-      font-size: 2.2rem;
-    }
+  @keyframes spin {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(360deg); }
+  }
 
-    .heart {
-      font-size: 3rem;
-      animation: float 1.5s infinite ease-in-out;
-    }
+  .shake {
+    animation: shake 0.4s infinite;
+  }
 
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0); }
+  .spin {
+    animation: spin 1s linear infinite;
+  }
+
+  /* ===== HEART GAME ===== */
+  .heart {
+    position: fixed;
+    font-size: 2.1rem;
+    cursor: pointer;
+    animation: floatUp 4s linear forwards;
+    z-index: 1;
+  }
+
+  @keyframes floatUp {
+    from {
+      transform: translateY(0);
+      opacity: 1;
     }
-  </style>
+    to {
+      transform: translateY(-120vh);
+      opacity: 0;
+    }
+  }
+
+  .score {
+    margin-top: 1rem;
+    font-weight: bold;
+    color: var(--pink);
+  }
+
+  #celebration {
+    display: none;
+  }
+</style>
 </head>
 <body>
 
-  <div class="card" id="card">
-    <h1>Hey Love 💕</h1>
-    <p>Will you be my Valentine?</p>
+<div class="card" id="card">
+  <h1>Hey Chotu 💕</h1>
+  <p id="text">Will you be my Valentine ?</p>
 
-    <div class="buttons">
-      <button id="yesBtn">Yes 💖</button>
-      <button id="noBtn">No 😢</button>
-    </div>
+  <div class="actions">
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No 😢</button>
   </div>
 
-  <div class="card celebration" id="celebration">
-    <h1>YAYYYYY!!! 🎉💘</h1>
-    <p>I knew you’d say yes 🥰</p>
-    <div class="heart">❤️💖❤️</div>
-  </div>
+  <div class="score" id="score"></div>
+</div>
 
-  <script>
-    const noBtn = document.getElementById("noBtn");
-    const yesBtn = document.getElementById("yesBtn");
-    const card = document.getElementById("card");
-    const celebration = document.getElementById("celebration");
+<div class="card" id="celebration">
+  <h1>Wohoooooo!!! 🎉💘</h1>
+  <p>Okay so… dinner with me, soon ? 🥰</p>
+</div>
 
-    noBtn.addEventListener("mouseover", () => {
-      const x = Math.random() * 200 - 100;
-      const y = Math.random() * 100 - 50;
-      noBtn.style.transform = `translate(${x}px, ${y}px)`;
-    });
+<script>
+  const noBtn = document.getElementById("noBtn");
+  const yesBtn = document.getElementById("yesBtn");
+  const text = document.getElementById("text");
+  const scoreEl = document.getElementById("score");
+  const card = document.getElementById("card");
+  const celebration = document.getElementById("celebration");
 
-    yesBtn.addEventListener("click", () => {
-      card.style.display = "none";
-      celebration.style.display = "block";
-    });
-  </script>
+  let noClicks = 0;
+  let affection = 0;
+  let heartInterval = null;
+
+  noBtn.addEventListener("click", () => {
+    noClicks++;
+
+    if (noClicks === 2) {
+      noBtn.classList.add("shake");
+      text.textContent = "Hey 😠 stop that.";
+    }
+
+    if (noClicks === 3) {
+      noBtn.classList.remove("shake");
+      noBtn.classList.add("spin");
+      text.textContent = "Okay now you’re just being rude.";
+    }
+
+    if (noClicks >= 4) {
+      teleportNo();
+      text.textContent = "Catch some hearts instead ❤️";
+      startHeartGame();
+    }
+  });
+
+  function teleportNo() {
+    const x = Math.random() * 40 + 50;
+    const y = Math.random() * 60 + 20;
+    noBtn.style.left = x + "%";
+    noBtn.style.top = y + "%";
+  }
+
+  function startHeartGame() {
+    if (heartInterval) return;
+
+    scoreEl.textContent = "Affection: 0 ❤️";
+
+    heartInterval = setInterval(() => {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.textContent = "❤️";
+      heart.style.left = Math.random() * 90 + "vw";
+      heart.style.bottom = "-20px";
+
+      heart.addEventListener("click", () => {
+        affection++;
+        scoreEl.textContent = `Affection: ${affection} ❤️`;
+        heart.remove();
+
+        if (affection >= 5) {
+          endHeartGame();
+        }
+      });
+
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 4000);
+    }, 800);
+  }
+
+  function endHeartGame() {
+    clearInterval(heartInterval);
+    heartInterval = null;
+    noBtn.remove();
+    scoreEl.textContent = "";
+    text.textContent = "Okay fine… will you be my Valentine now? 🥰";
+  }
+
+  yesBtn.addEventListener("click", () => {
+    card.style.display = "none";
+    celebration.style.display = "block";
+  });
+</script>
 
 </body>
 </html>
