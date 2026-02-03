@@ -55,7 +55,7 @@
     border: none;
     cursor: pointer;
     position: absolute;
-    transition: all 0.25s ease;
+    transition: transform 0.2s ease, left 0.15s ease, top 0.15s ease;
   }
 
   #yesBtn {
@@ -63,67 +63,36 @@
     color: white;
     left: 20%;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%) scale(1);
   }
 
   #noBtn {
     background: #ddd;
     left: 60%;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%) scale(1);
   }
 
-  /* Rage animations */
-  @keyframes shake {
-    0% { transform: translateY(-50%) translateX(0); }
-    25% { transform: translateY(-50%) translateX(-20px); }
-    50% { transform: translateY(-50%) translateX(20px); }
-    75% { transform: translateY(-50%) translateX(-20px); }
-    100% { transform: translateY(-50%) translateX(0); }
-  }
-
-  @keyframes spin {
-    from { transform: translateY(-50%) rotate(0deg); }
-    to { transform: translateY(-50%) rotate(360deg); }
-  }
-
-  .shake { animation: shake 0.4s infinite; }
-  .spin { animation: spin 1s linear infinite; }
-
-  /* Hearts */
-  .heart {
+  /* Frustrated GIF */
+  #gifOverlay {
+    display: none;
     position: fixed;
-    font-size: 3rem;
-    cursor: pointer;
-    animation: floatUp 4s linear forwards;
-    z-index: 1;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
   }
 
-  @keyframes floatUp {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(-100vh); opacity: 0; }
-  }
-
-  .score {
-    margin-top: 1rem;
-    font-weight: bold;
-    color: var(--pink);
+  #gifOverlay img {
+    width: 320px;
+    max-width: 80%;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
   }
 
   #celebration {
     display: none;
-  }
-
-  /* Funny GIF */
-  #funnyGif {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 180px;
-    z-index: 5;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   }
 </style>
 </head>
@@ -137,8 +106,6 @@
     <button id="yesBtn">Yes 💖</button>
     <button id="noBtn">No 😢</button>
   </div>
-
-  <div class="score" id="score"></div>
 </div>
 
 <div class="card" id="celebration">
@@ -146,108 +113,74 @@
   <p>Okay so… dinner with me, soon ? 🥰</p>
 </div>
 
-<img
-  id="funnyGif"
-  src="https://media.giphy.com/media/l3vRlT2k2L35Cnn5C/giphy.gif"
-  alt="funny reaction"
-/>
+<div id="gifOverlay">
+  <img src="https://media.giphy.com/media/11tTNkNy1SdXGg/giphy.gif" alt="frustrated" />
+</div>
 
 <script>
   const noBtn = document.getElementById("noBtn");
   const yesBtn = document.getElementById("yesBtn");
   const text = document.getElementById("text");
-  const scoreEl = document.getElementById("score");
   const card = document.getElementById("card");
   const celebration = document.getElementById("celebration");
-  const funnyGif = document.getElementById("funnyGif");
+  const gifOverlay = document.getElementById("gifOverlay");
 
   let noClicks = 0;
-  let affection = 0;
-  let heartInterval = null;
+  let noScale = 1;
+  let yesScale = 1;
 
   noBtn.addEventListener("click", () => {
     noClicks++;
 
     if (noClicks === 1) {
-      noBtn.classList.add("shake");
       text.textContent = "Hey 😠 stop that.";
     }
 
     if (noClicks === 2) {
-      noBtn.classList.remove("shake");
-      noBtn.classList.add("spin");
-      text.textContent = "Okay now you’re just being rude 😤";
-      funnyGif.style.display = "block";
-
-      setTimeout(() => {
-        funnyGif.style.display = "none";
-      }, 5000);
+      text.textContent = "Really? 😤";
+      gifOverlay.style.display = "flex";
+      setTimeout(() => gifOverlay.style.display = "none", 3500);
     }
 
-    if (noClicks === 3) {
-      text.textContent = "Catch me if you can 😈❤️";
-      startHeartGame();
-      document.addEventListener("mousemove", evadeCursor);
+    if (noClicks >= 3) {
+      shrinkNo();
+      growYes();
+      text.textContent = "Why are you still clicking NO 😭";
     }
   });
 
-  function evadeCursor(e) {
-    const rect = noBtn.getBoundingClientRect();
-    const btnX = rect.left + rect.width / 2;
-    const btnY = rect.top + rect.height / 2;
+  function shrinkNo() {
+    noScale = Math.max(0.55, noScale - 0.1);
+    noBtn.style.transform = `translateY(-50%) scale(${noScale})`;
+  }
 
-    const dx = btnX - e.clientX;
-    const dy = btnY - e.clientY;
+  function growYes() {
+    yesScale += 0.12;
+    yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
+  }
+
+  document.addEventListener("mousemove", (e) => {
+    if (noClicks < 3) return;
+
+    const rect = noBtn.getBoundingClientRect();
+    const dx = rect.left + rect.width / 2 - e.clientX;
+    const dy = rect.top + rect.height / 2 - e.clientY;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance < 120) {
-      const angle = Math.atan2(dy, dx);
-      const moveX = Math.cos(angle) * 140;
-      const moveY = Math.sin(angle) * 140;
+    if (distance < 90) {
+      const moveX = dx * 0.25;
+      const moveY = dy * 0.25;
 
-      let newLeft = rect.left + moveX;
-      let newTop = rect.top + moveY;
+      let left = rect.left + moveX;
+      let top = rect.top + moveY;
 
-      newLeft = Math.max(0, Math.min(window.innerWidth - rect.width, newLeft));
-      newTop = Math.max(0, Math.min(window.innerHeight - rect.height, newTop));
+      left = Math.max(20, Math.min(window.innerWidth - rect.width - 20, left));
+      top = Math.max(20, Math.min(window.innerHeight - rect.height - 20, top));
 
-      noBtn.style.left = newLeft + "px";
-      noBtn.style.top = newTop + "px";
+      noBtn.style.left = left + "px";
+      noBtn.style.top = top + "px";
     }
-  }
-
-  function startHeartGame() {
-    if (heartInterval) return;
-
-    scoreEl.textContent = "Affection: 0 ❤️";
-
-    heartInterval = setInterval(() => {
-      const heart = document.createElement("div");
-      heart.className = "heart";
-      heart.textContent = "❤️";
-      heart.style.left = Math.random() * 90 + "vw";
-      heart.style.bottom = "-20px";
-
-      heart.addEventListener("click", () => {
-        affection++;
-        scoreEl.textContent = `Affection: ${affection} ❤️`;
-        heart.remove();
-
-        if (affection >= 5) endHeartGame();
-      });
-
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 4000);
-    }, 800);
-  }
-
-  function endHeartGame() {
-    clearInterval(heartInterval);
-    heartInterval = null;
-    noBtn.remove();
-    scoreEl.textContent = "";
-    text.textContent = "Okay fine… will you be my Valentine now? 🥰";
-  }
+  });
 
   yesBtn.addEventListener("click", () => {
     card.style.display = "none";
