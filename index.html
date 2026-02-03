@@ -55,7 +55,7 @@
     border: none;
     cursor: pointer;
     position: absolute;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
   }
 
   #yesBtn {
@@ -73,7 +73,7 @@
     transform: translateY(-50%);
   }
 
-  /* ===== RAGE MODE ANIMATIONS ===== */
+  /* Rage animations */
   @keyframes shake {
     0% { transform: translateY(-50%) translateX(0); }
     25% { transform: translateY(-50%) translateX(-20px); }
@@ -87,32 +87,21 @@
     to { transform: translateY(-50%) rotate(360deg); }
   }
 
-  .shake {
-    animation: shake 0.4s infinite;
-  }
+  .shake { animation: shake 0.4s infinite; }
+  .spin { animation: spin 1s linear infinite; }
 
-  .spin {
-    animation: spin 1s linear infinite;
-  }
-
-  /* ===== HEART GAME ===== */
+  /* Hearts */
   .heart {
     position: fixed;
-    font-size: 3.1rem;
+    font-size: 3rem;
     cursor: pointer;
     animation: floatUp 4s linear forwards;
     z-index: 1;
   }
 
   @keyframes floatUp {
-    from {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateY(-100vh);
-      opacity: 0;
-    }
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-100vh); opacity: 0; }
   }
 
   .score {
@@ -123,6 +112,18 @@
 
   #celebration {
     display: none;
+  }
+
+  /* Funny GIF */
+  #funnyGif {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 180px;
+    z-index: 5;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   }
 </style>
 </head>
@@ -145,6 +146,12 @@
   <p>Okay so… dinner with me, soon ? 🥰</p>
 </div>
 
+<img
+  id="funnyGif"
+  src="https://media.giphy.com/media/l3vRlT2k2L35Cnn5C/giphy.gif"
+  alt="funny reaction"
+/>
+
 <script>
   const noBtn = document.getElementById("noBtn");
   const yesBtn = document.getElementById("yesBtn");
@@ -152,6 +159,7 @@
   const scoreEl = document.getElementById("score");
   const card = document.getElementById("card");
   const celebration = document.getElementById("celebration");
+  const funnyGif = document.getElementById("funnyGif");
 
   let noClicks = 0;
   let affection = 0;
@@ -168,10 +176,11 @@
     if (noClicks === 2) {
       noBtn.classList.remove("shake");
       noBtn.classList.add("spin");
-      text.textContent = "Okay now you’re just being rude.";
-      document.getElementById("funnyGif").style.display = "block";
+      text.textContent = "Okay now you’re just being rude 😤";
+      funnyGif.style.display = "block";
+
       setTimeout(() => {
-        document.getElementById("funnyGif").style.display = "none";
+        funnyGif.style.display = "none";
       }, 5000);
     }
 
@@ -182,11 +191,29 @@
     }
   });
 
-  function teleportNo() {
-    const x = Math.random() * 40 + 50;
-    const y = Math.random() * 60 + 20;
-    noBtn.style.left = x + "%";
-    noBtn.style.top = y + "%";
+  function evadeCursor(e) {
+    const rect = noBtn.getBoundingClientRect();
+    const btnX = rect.left + rect.width / 2;
+    const btnY = rect.top + rect.height / 2;
+
+    const dx = btnX - e.clientX;
+    const dy = btnY - e.clientY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 120) {
+      const angle = Math.atan2(dy, dx);
+      const moveX = Math.cos(angle) * 140;
+      const moveY = Math.sin(angle) * 140;
+
+      let newLeft = rect.left + moveX;
+      let newTop = rect.top + moveY;
+
+      newLeft = Math.max(0, Math.min(window.innerWidth - rect.width, newLeft));
+      newTop = Math.max(0, Math.min(window.innerHeight - rect.height, newTop));
+
+      noBtn.style.left = newLeft + "px";
+      noBtn.style.top = newTop + "px";
+    }
   }
 
   function startHeartGame() {
@@ -206,9 +233,7 @@
         scoreEl.textContent = `Affection: ${affection} ❤️`;
         heart.remove();
 
-        if (affection >= 5) {
-          endHeartGame();
-        }
+        if (affection >= 5) endHeartGame();
       });
 
       document.body.appendChild(heart);
@@ -228,50 +253,7 @@
     card.style.display = "none";
     celebration.style.display = "block";
   });
-
-  function evadeCursor(e) {
-    const rect = noBtn.getBoundingClientRect();
-  
-    const btnCenterX = rect.left + rect.width / 2;
-    const btnCenterY = rect.top + rect.height / 2;
-  
-    const dx = btnCenterX - e.clientX;
-    const dy = btnCenterY - e.clientY;
-  
-    const distance = Math.sqrt(dx * dx + dy * dy);
-  
-    if (distance < 120) {
-      const angle = Math.atan2(dy, dx);
-      const moveX = Math.cos(angle) * 120;
-      const moveY = Math.sin(angle) * 120;
-  
-      let newLeft = rect.left + moveX;
-      let newTop = rect.top + moveY;
-  
-      // Keep inside viewport
-      newLeft = Math.max(0, Math.min(window.innerWidth - rect.width, newLeft));
-      newTop = Math.max(0, Math.min(window.innerHeight - rect.height, newTop));
-  
-      noBtn.style.left = newLeft + "px";
-      noBtn.style.top = newTop + "px";
-    }
-  }
 </script>
-
-<img
-  id="funnyGif"
-  src="https://media.giphy.com/media/l3vRlT2k2L35Cnn5C/giphy.gif"
-  alt="funny"
-  style="
-    display:none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 180px;
-    z-index: 5;
-    border-radius: 12px;
-  "
-/>
 
 </body>
 </html>
