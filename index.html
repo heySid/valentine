@@ -76,9 +76,9 @@
   /* ===== RAGE MODE ANIMATIONS ===== */
   @keyframes shake {
     0% { transform: translateY(-50%) translateX(0); }
-    25% { transform: translateY(-50%) translateX(-4px); }
-    50% { transform: translateY(-50%) translateX(4px); }
-    75% { transform: translateY(-50%) translateX(-4px); }
+    25% { transform: translateY(-50%) translateX(-20px); }
+    50% { transform: translateY(-50%) translateX(20px); }
+    75% { transform: translateY(-50%) translateX(-20px); }
     100% { transform: translateY(-50%) translateX(0); }
   }
 
@@ -98,7 +98,7 @@
   /* ===== HEART GAME ===== */
   .heart {
     position: fixed;
-    font-size: 2.1rem;
+    font-size: 3.1rem;
     cursor: pointer;
     animation: floatUp 4s linear forwards;
     z-index: 1;
@@ -110,7 +110,7 @@
       opacity: 1;
     }
     to {
-      transform: translateY(-120vh);
+      transform: translateY(-100vh);
       opacity: 0;
     }
   }
@@ -160,18 +160,18 @@
   noBtn.addEventListener("click", () => {
     noClicks++;
 
-    if (noClicks === 2) {
+    if (noClicks === 1) {
       noBtn.classList.add("shake");
       text.textContent = "Hey 😠 stop that.";
     }
 
-    if (noClicks === 3) {
+    if (noClicks === 2) {
       noBtn.classList.remove("shake");
       noBtn.classList.add("spin");
       text.textContent = "Okay now you’re just being rude.";
     }
 
-    if (noClicks >= 4) {
+    if (noClicks >= 3) {
       teleportNo();
       text.textContent = "Catch some hearts instead ❤️";
       startHeartGame();
