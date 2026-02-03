@@ -169,12 +169,16 @@
       noBtn.classList.remove("shake");
       noBtn.classList.add("spin");
       text.textContent = "Okay now you’re just being rude.";
+      document.getElementById("funnyGif").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("funnyGif").style.display = "none";
+      }, 5000);
     }
 
-    if (noClicks >= 3) {
-      teleportNo();
-      text.textContent = "Catch some hearts instead ❤️";
+    if (noClicks === 3) {
+      text.textContent = "Catch me if you can 😈❤️";
       startHeartGame();
+      document.addEventListener("mousemove", evadeCursor);
     }
   });
 
@@ -224,7 +228,50 @@
     card.style.display = "none";
     celebration.style.display = "block";
   });
+
+  function evadeCursor(e) {
+    const rect = noBtn.getBoundingClientRect();
+  
+    const btnCenterX = rect.left + rect.width / 2;
+    const btnCenterY = rect.top + rect.height / 2;
+  
+    const dx = btnCenterX - e.clientX;
+    const dy = btnCenterY - e.clientY;
+  
+    const distance = Math.sqrt(dx * dx + dy * dy);
+  
+    if (distance < 120) {
+      const angle = Math.atan2(dy, dx);
+      const moveX = Math.cos(angle) * 120;
+      const moveY = Math.sin(angle) * 120;
+  
+      let newLeft = rect.left + moveX;
+      let newTop = rect.top + moveY;
+  
+      // Keep inside viewport
+      newLeft = Math.max(0, Math.min(window.innerWidth - rect.width, newLeft));
+      newTop = Math.max(0, Math.min(window.innerHeight - rect.height, newTop));
+  
+      noBtn.style.left = newLeft + "px";
+      noBtn.style.top = newTop + "px";
+    }
+  }
 </script>
+
+<img
+  id="funnyGif"
+  src="https://media.giphy.com/media/l3vRlT2k2L35Cnn5C/giphy.gif"
+  alt="funny"
+  style="
+    display:none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 180px;
+    z-index: 5;
+    border-radius: 12px;
+  "
+/>
 
 </body>
 </html>
